@@ -1,5 +1,5 @@
 from burp import IBurpExtender, ITab, IHttpListener
-from javax.swing import JPanel, JTable, JScrollPane, JTextField, JButton, JLabel, JSplitPane, JTextArea, BoxLayout
+from javax.swing import JPanel, JTable, JScrollPane, JTextField, JToggleButton, JLabel, JSplitPane, JTextArea, BoxLayout
 from javax.swing.table import AbstractTableModel
 from java.awt import BorderLayout
 from java.awt.event import MouseAdapter, MouseEvent
@@ -21,15 +21,15 @@ class BurpExtender(IBurpExtender, ITab, IHttpListener):
         self._table = JTable(self._table_model)
         self._scroll_pane = JScrollPane(self._table)
 
-        # Filter panel setup (renamed to monitor)
+        # Filter panel setup (using JToggleButton for monitor switch)
         self._filter_panel = JPanel()
         self._filter_panel.setLayout(BoxLayout(self._filter_panel, BoxLayout.X_AXIS))
         self._pattern_label = JLabel("Pattern: ")
         self._pattern_field = JTextField("", 20)
-        self._monitor_button = JButton("Monitor", actionPerformed=self.monitor_requests)
+        self._monitor_toggle = JToggleButton("Monitor", actionPerformed=self.toggle_monitoring)
         self._filter_panel.add(self._pattern_label)
         self._filter_panel.add(self._pattern_field)
-        self._filter_panel.add(self._monitor_button)
+        self._filter_panel.add(self._monitor_toggle)
 
         # Request and Response content setup
         self._request_area = JTextArea()
@@ -102,18 +102,25 @@ class BurpExtender(IBurpExtender, ITab, IHttpListener):
                 self._requests.append(messageInfo)
                 self._table_model.fireTableDataChanged()
 
-    def monitor_requests(self, event):
-        self._pattern = self._pattern_field.getText()
-        if self._pattern:
-            self._monitoring = True
-            self._monitor_button.setText("Monitoring")
-        else:
+    def toggle_monitoring(self, event):
+        if self._monitoring:
+            # Stop monitoring
             self._monitoring = False
-            self._monitor_button.setText("Monitor")
-
-        # Optionally, you could clear the list of requests if you want to start fresh
-        self._requests = []
-        self._table_model.fireTableDataChanged()
+            self._monitor_toggle.setText("Monitor")
+            self._requests = []  # Clear current requests if needed
+            self._table_model.fireTableDataChanged()
+        else:
+            # Start monitoring
+            self._pattern = self._pattern_field.getText()
+            if self._pattern:
+                self._monitoring = True
+                self._monitor_toggle.setText("Monitoring")
+                self._requests = []  # Clear previous requests
+                self._table_model.fireTableDataChanged()
+            else:
+                # Pattern is empty, just reset button
+                self._monitoring = False
+                self._monitor_toggle.setText("Monitor")
 
     def display_request_response(self, rowIndex):
         messageInfo = self._requests[rowIndex]
