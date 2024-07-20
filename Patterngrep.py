@@ -50,9 +50,9 @@ class BurpExtender(IBurpExtender, ITab, IHttpListener):
 
         # Search functionality for request and response
         self._request_search_field = JTextField("", 20)
-        self._request_search_button = JButton("Search", actionPerformed=self.search_request)
+        self._request_search_button = JToggleButton("Search", actionPerformed=self.search_request)
         self._response_search_field = JTextField("", 20)
-        self._response_search_button = JButton("Search", actionPerformed=self.search_response)
+        self._response_search_button = JToggleButton("Search", actionPerformed=self.search_response)
 
         self._request_search_panel = JPanel()
         self._request_search_panel.setLayout(BoxLayout(self._request_search_panel, BoxLayout.X_AXIS))
