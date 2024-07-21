@@ -9,5 +9,7 @@ It also has search option in bottom so that you dont need to look for it manuall
 Download the repo<br/>
 Open extensions tab and add the extension.<br/>
 
+patterngrep2.py support multi pattern match support<br/>
+
 
 **Disclaimer:** do not use it for malicious purposes. Use it at your own risk.<br/>
